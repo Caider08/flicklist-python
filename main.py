@@ -23,14 +23,14 @@ class Index(webapp2.RequestHandler):
 
         # TODO: pick a different random movie, and display it under
         # the heading "<h1>Tommorrow's Movie</h1>"
-        tom_movie = self.getRandomMovie()
+        tomo_movie = self.getRandomMovie()
 
-        while tom_movie == movie:
-            tom_movie = self.getRandomMovie()
+        while tomo_movie == movie:
+            tomo_movie = self.getRandomMovie()
 
 
         content += "<h1>Tomorrow's Movie</h1>"
-        content += "<p>" + tom_movie + "</p>"
+        content += "<p>" + tomo_movie + "</p>"
 
         self.response.write(content)
 
