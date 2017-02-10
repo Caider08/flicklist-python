@@ -23,6 +23,10 @@ class Movie(db.Model):
     watched = db.BooleanProperty(required = True, default = False)
     rating = db.StringProperty()
 
+    def valid_rating(self, rating):
+        valid_ratings = ['*', '**', '***', '****', '*****']
+        return rating in valid_ratings
+
 
 def getUnwatchedMovies():
     """ Returns the list of movies the user wants to watch (but hasnt yet) """
@@ -127,10 +131,11 @@ class MovieRatings(Handler):
     def get(self):
         # TODO 1
         # Make a GQL query for all the movies that have been watched
-        watched_movies = [] # type something else instead of an empty list
+        watched_movies = db.GqlQuery("SELECT * FROM Movie where watched=True ORDER By created") # type something else instead of an empty list
 
         # TODO (extra credit)
         # in the query above, add something so that the movies are sorted by creation date, most recent first
+
 
         t = jinja_env.get_template("ratings.html")
         content = t.render(movies = watched_movies)
@@ -142,16 +147,18 @@ class MovieRatings(Handler):
 
         # TODO 2
         # retreive the movie entity whose id is movie_id
-        movie = None # type something else instead of None
-
-        if movie and rating:
+        #movie = db.GqlQuery("SELECT * FROM Movie where id=movie_id") # type something else instead of None
+        movie = Movie.get_by_id(int(movie_id))
+        if movie and movie.valid_rating(rating):
             # TODO 3
+            movie.rating = rating
+            movie.put()
             # update the movie's rating property and save it to the database
 
 
             # render confirmation
             t = jinja_env.get_template("rating-confirmation.html")
-            content = t.render(movie = movie)
+            content = t.render(movie = movie.title, rating=movie.rating)
             self.response.write(content)
         else:
             self.renderError(400)
